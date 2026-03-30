@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openenv-meta-ad-optimizer"
+version = "0.1.0"
+description = "Meta Ad Optimizer — OpenEnv RL environment for Instagram & Facebook ad delivery optimisation"
+requires-python = ">=3.10"
+dependencies = [
+    "openenv-core[core]>=0.2.1",
+    "numpy>=1.24.0",
+    "pydantic>=2.0.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.24.0",
+]
+
+[project.optional-dependencies]
+llm = [
+    "openai>=1.0.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.scripts]
+server = "meta_ad_optimizer.server.app:main"
+
+[tool.setuptools]
+include-package-data = true
+packages = ["meta_ad_optimizer", "meta_ad_optimizer.server"]
+package-dir = { "meta_ad_optimizer" = ".", "meta_ad_optimizer.server" = "server" }
