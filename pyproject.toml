@@ -19,9 +19,17 @@ dependencies = [
 llm = [
     "openai>=1.0.0",
 ]
+gym = [
+    "gymnasium>=0.29.0",
+]
+claude = [
+    "claude-agent-sdk>=0.1.0",
+    "anyio>=3.0.0",
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-cov>=4.0.0",
+    "gymnasium>=0.29.0",
 ]
 
 [project.scripts]
@@ -31,3 +39,7 @@ server = "meta_ad_optimizer.server.app:main"
 include-package-data = true
 packages = ["meta_ad_optimizer", "meta_ad_optimizer.server"]
 package-dir = { "meta_ad_optimizer" = ".", "meta_ad_optimizer.server" = "server" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--import-mode=importlib"
