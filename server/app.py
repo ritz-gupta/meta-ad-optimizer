@@ -31,6 +31,16 @@ app = create_app(
 )
 
 
+@app.get("/")
+def root():
+    return {
+        "name": "meta_ad_optimizer",
+        "status": "running",
+        "endpoints": ["/reset", "/step", "/state", "/health"],
+        "tasks": ["creative_matcher", "placement_optimizer", "campaign_optimizer"],
+    }
+
+
 def main(host: str = "0.0.0.0", port: int = 8000):
     """Entry point for ``uv run server`` or ``python -m meta_ad_optimizer.server.app``."""
     import uvicorn
