@@ -1,3 +1,12 @@
+---
+title: Meta Ad Optimizer
+emoji: 📊
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_port: 8000
+---
+
 # Meta Ad Optimizer — OpenEnv RL Environment
 
 An OpenEnv reinforcement-learning environment that simulates ad delivery across **Instagram** and **Facebook**. An agent learns to optimise ad placement, creative selection, format choice, and impression frequency to maximise engagement while managing user fatigue.
