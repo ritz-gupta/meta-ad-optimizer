@@ -83,15 +83,23 @@ DEFAULT_TASK = "campaign_optimizer"
 # Grader functions  (each returns 0.0 – 1.0)
 # ---------------------------------------------------------------------------
 
+_SCORE_EPS = 1e-6  # scores must be strictly in (0, 1)
+
+
 def _safe_div(a: float, b: float) -> float:
     return a / b if b > 0 else 0.0
+
+
+def _clamp(score: float) -> float:
+    """Clamp to strictly open interval (0, 1) as required by the validator."""
+    return max(_SCORE_EPS, min(1.0 - _SCORE_EPS, score))
 
 
 def score_creative_matcher(state: AdState) -> float:
     """Easy task grader: pure session CTR."""
     if state.total_impressions_shown == 0:
-        return 0.0
-    return min(1.0, state.total_clicks / state.total_impressions_shown)
+        return _clamp(0.0)
+    return _clamp(min(1.0, state.total_clicks / state.total_impressions_shown))
 
 
 def score_placement_optimizer(state: AdState, max_view_time: float = 15.0) -> float:
@@ -103,7 +111,7 @@ def score_placement_optimizer(state: AdState, max_view_time: float = 15.0) -> fl
     norm_view = min(1.0, _safe_div(state.total_view_time, max_view_time * state.step_count))
     engagement = 0.5 * min(1.0, ctr / 0.5) + 0.5 * norm_view
 
-    return min(1.0, 0.3 * validity + 0.7 * engagement)
+    return _clamp(min(1.0, 0.3 * validity + 0.7 * engagement))
 
 
 def score_campaign_optimizer(
@@ -126,13 +134,13 @@ def score_campaign_optimizer(
 
     fatigue_score = 1.0 - state.fatigue_level
 
-    return min(1.0, (
+    return _clamp(min(1.0, (
         0.15 * validity
         + 0.25 * ctr_score
         + 0.20 * view_score
         + 0.25 * sat_score
         + 0.15 * fatigue_score
-    ))
+    )))
 
 
 GRADERS = {
