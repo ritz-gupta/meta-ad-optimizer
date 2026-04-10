@@ -150,7 +150,13 @@ GRADERS = {
 }
 
 
+_SCORE_LOW = 0.001
+_SCORE_HIGH = 0.999
+
+
 def grade_episode(state: AdState) -> float:
     """Score a completed episode using the task-appropriate grader."""
     grader = GRADERS.get(state.task, score_campaign_optimizer)
-    return round(grader(state), 4)
+    raw = grader(state)
+    clamped = max(_SCORE_LOW, min(_SCORE_HIGH, raw))
+    return round(clamped, 4)
