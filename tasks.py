@@ -80,6 +80,83 @@ DEFAULT_TASK = "campaign_optimizer"
 
 
 # ---------------------------------------------------------------------------
+# AdMarket Arena (Round 2) — multi-advertiser auction tasks
+# ---------------------------------------------------------------------------
+#
+# Three difficulty tiers selected by ``reset(task=...)`` on the arena env.
+# Curriculum scheduler (``curriculum_scheduler.py``) promotes advertiser
+# training arena_easy -> arena_medium -> arena_hard when mean episode
+# reward > 0.30 for 10 consecutive rollouts.
+#
+# arena_easy doubles as the fast smoke-test target (~2 min/episode on T4
+# vs ~5 min for arena_hard) — lets us validate the GRPO pipeline in
+# 30 min before committing 4 hours to arena_hard training.
+
+@dataclass(frozen=True)
+class ArenaTaskConfig:
+    """Immutable configuration for a single AdMarket Arena tier."""
+
+    name: str
+    days: int
+    impressions_per_day: int
+    weekly_budget: float
+    daily_budget: float
+    n_personas: int
+    persona_jitter: bool
+    floor_price_base: float
+    floor_price_daily_increment: float
+    frequency_cap_per_user: int
+    target_weekly_roas: float
+
+    @property
+    def steps_per_episode(self) -> int:
+        return self.days * self.impressions_per_day
+
+
+ARENA_TASKS: Dict[str, ArenaTaskConfig] = {
+    "arena_easy": ArenaTaskConfig(
+        name="arena_easy",
+        days=3,
+        impressions_per_day=20,
+        weekly_budget=300.0,
+        daily_budget=100.0,
+        n_personas=3,
+        persona_jitter=False,
+        floor_price_base=0.0,
+        floor_price_daily_increment=0.0,
+        frequency_cap_per_user=999,
+        target_weekly_roas=1.5,
+    ),
+    "arena_medium": ArenaTaskConfig(
+        name="arena_medium",
+        days=5,
+        impressions_per_day=30,
+        weekly_budget=500.0,
+        daily_budget=100.0,
+        n_personas=4,
+        persona_jitter=True,
+        floor_price_base=0.25,
+        floor_price_daily_increment=0.05,
+        frequency_cap_per_user=5,
+        target_weekly_roas=1.75,
+    ),
+    "arena_hard": ArenaTaskConfig(
+        name="arena_hard",
+        days=7,
+        impressions_per_day=50,
+        weekly_budget=1000.0,
+        daily_budget=143.0,
+        n_personas=5,
+        persona_jitter=True,
+        floor_price_base=0.50,
+        floor_price_daily_increment=0.10,
+        frequency_cap_per_user=3,
+        target_weekly_roas=2.0,
+    ),
+}
+
+
+# ---------------------------------------------------------------------------
 # Grader functions  (each returns 0.0 – 1.0)
 # ---------------------------------------------------------------------------
 
