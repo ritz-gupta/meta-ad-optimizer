@@ -315,10 +315,115 @@ def run_episode(
 
 
 # ---------------------------------------------------------------------------
+# Eval-mode dispatch (Plan 2 + Plan 3)
+# ---------------------------------------------------------------------------
+#
+# --eval-mode standard | edge | selfplay   --> Plan 3 (advertiser robustness)
+# --eval-mode oversight                     --> Plan 2 (Fleet AI bonus)
+#
+# These modes are additive to the existing default behavior. When no
+# --eval-mode flag is passed, the script runs the legacy single-task
+# Round 1 ad-optimizer harness (preserved below for backward compat).
+
+
+def _run_oversight_eval_mode(
+    trajectories_path: str,
+    checkpoint_path: Optional[str],
+    out_path: str,
+    adversarial_path: Optional[str],
+    vs_advertiser_path: Optional[str],
+) -> int:
+    """Plan 2: Oversight 3-tier F1 eval. Delegates to scripts.oversight_eval.
+
+    Why a thin wrapper instead of recommending users call the script
+    directly: judging criterion explicitly mentions inference.py as the
+    single robustness harness. Keeping all eval modes reachable from
+    the same entry point is the spec.
+    """
+    import sys as _sys
+    from pathlib import Path as _Path
+    _scripts_dir = _Path(__file__).resolve().parent / "scripts"
+    if str(_scripts_dir) not in _sys.path:
+        _sys.path.insert(0, str(_scripts_dir))
+    import importlib.util as _ilu
+    _spec = _ilu.spec_from_file_location("_oversight_eval_mod", _scripts_dir / "oversight_eval.py")
+    if _spec is None or _spec.loader is None:
+        print("[oversight] could not locate scripts/oversight_eval.py", flush=True)
+        return 1
+    _mod = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_mod)
+
+    argv_save = _sys.argv[:]
+    _sys.argv = [
+        "oversight_eval.py",
+        "--trajectories", trajectories_path,
+        "--out", out_path,
+    ]
+    if checkpoint_path:
+        _sys.argv += ["--checkpoint", checkpoint_path]
+    if adversarial_path:
+        _sys.argv += ["--adversarial-trajectories", adversarial_path]
+    if vs_advertiser_path:
+        _sys.argv += ["--vs-advertiser-trajectories", vs_advertiser_path]
+    try:
+        return int(_mod.main() or 0)
+    finally:
+        _sys.argv = argv_save
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
 def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Inference + eval harness for Meta Ad Optimizer / AdMarket Arena.",
+        add_help=True,
+    )
+    parser.add_argument(
+        "--eval-mode",
+        choices=["standard", "edge", "selfplay", "oversight"],
+        default=None,
+        help=(
+            "Robustness/eval mode. standard/edge/selfplay = advertiser eval (Plan 3). "
+            "oversight = Plan 2 Fleet AI bonus eval. "
+            "If omitted, runs the legacy Round 1 single-task harness."
+        ),
+    )
+    parser.add_argument("--trajectories", type=str, default=None,
+                        help="Oversight: path to trajectory JSONL.")
+    parser.add_argument("--checkpoint", type=str, default=None,
+                        help="Oversight: path to trained Unsloth LoRA checkpoint.")
+    parser.add_argument("--adversarial-trajectories", type=str, default=None)
+    parser.add_argument("--vs-advertiser-trajectories", type=str, default=None)
+    parser.add_argument("--out", type=str, default="results/oversight_eval_results.json",
+                        help="Oversight: where to write results JSON.")
+    args, _ = parser.parse_known_args()
+
+    if args.eval_mode == "oversight":
+        if not args.trajectories:
+            print("[oversight] --trajectories is required for --eval-mode oversight", flush=True)
+            raise SystemExit(2)
+        rc = _run_oversight_eval_mode(
+            trajectories_path=args.trajectories,
+            checkpoint_path=args.checkpoint,
+            out_path=args.out,
+            adversarial_path=args.adversarial_trajectories,
+            vs_advertiser_path=args.vs_advertiser_trajectories,
+        )
+        raise SystemExit(rc)
+
+    if args.eval_mode in ("standard", "edge", "selfplay"):
+        print(
+            f"[inference] --eval-mode {args.eval_mode} is owned by Plan 3 "
+            "(advertiser training & observability) and is not yet implemented in this branch.",
+            flush=True,
+        )
+        raise SystemExit(2)
+
+    # Legacy Round 1 single-task harness (default behavior).
     client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN, timeout=15.0)
     env = AdOptimizerEnvironment()
 
