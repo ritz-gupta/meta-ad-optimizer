@@ -15,6 +15,21 @@ app_port: 8000
 
 ---
 
+## Submission Materials
+
+| Material | Link |
+|---|---|
+| **Live HF Space** (runnable env) | https://huggingface.co/spaces/ritz-gupta/AdMarket-Arena |
+| **Blog post** (writeup) | [`blog_post.md`](./blog_post.md) · [view on HF Space](https://huggingface.co/spaces/ritz-gupta/AdMarket-Arena/blob/main/blog_post.md) |
+| **Pitch deck** (slides) | [`AdMarket_Arena_Hackathon.pptx`](https://github.com/ritz-gupta/AdMarket-Arena/raw/main/AdMarket_Arena_Hackathon.pptx) |
+| **Trained model** (HF Hub) | [`MuskanBidani/admarket-advertiser-qwen2.5-3b-grpo`](https://huggingface.co/MuskanBidani/admarket-advertiser-qwen2.5-3b-grpo) |
+| **Training notebook** | [`train_grpo.ipynb`](./train_grpo.ipynb) |
+| **Source code** | https://github.com/ritz-gupta/AdMarket-Arena |
+
+**What we trained.** `Qwen2.5-3B-Instruct` fine-tuned with TRL **GRPO** + Unsloth (4-bit NF4, LoRA r=16) to play the *advertiser* role — bidding, pacing budget, and rotating creatives across a 7-day, 350-step Vickrey auction against four scripted `PersonaBot` opponents. **Headline: 3.15× the ROAS of random** on `arena_easy` (full numbers in the Baselines section below). Trained on Colab T4 in ~4 hours for 80 GRPO steps.
+
+---
+
 ## ⚠️ Endpoint — Use `/arena`
 
 This Space serves **two** environments behind one FastAPI app. The Arena (the hackathon submission) is mounted at `/arena`; the original single-agent optimizer at `/` is the foundation it's built on.
