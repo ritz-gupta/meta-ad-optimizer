@@ -232,6 +232,7 @@ python -m meta_ad_optimizer.baseline --arena --task arena_easy --episodes 5 --se
 
 - **HuggingFace Space**: [ritz-gupta/meta-ad-optimizer](https://huggingface.co/spaces/ritz-gupta/meta-ad-optimizer)
 - **Blog post**: [`blog_post.md`](./blog_post.md)
+- **Pitch deck (slides)**: [`AdMarket_Arena_Hackathon.pptx`](https://github.com/ritz-gupta/meta-ad-optimizer/raw/main/AdMarket_Arena_Hackathon.pptx)
 - **Training notebook**: [`train_grpo.ipynb`](./train_grpo.ipynb)
 - **Oversight notebook**: [`train_oversight.ipynb`](./train_oversight.ipynb)
 - **Source code**: [github.com/ritz-gupta/meta-ad-optimizer](https://github.com/ritz-gupta/meta-ad-optimizer)
