@@ -20,7 +20,7 @@ tags:
 >
 > **Want the full story?**
 > - **Execution & how to run it →** [`README.md`](./README.md)
-> - **The 10-slide pitch deck →** [`AdMarket_Arena_Hackathon.pptx`](https://github.com/ritz-gupta/meta-ad-optimizer/raw/main/AdMarket_Arena_Hackathon.pptx)
+> - **The 10-slide pitch deck →** [`AdMarket_Arena_Hackathon.pptx`](https://github.com/ritz-gupta/AdMarket-Arena/raw/main/AdMarket_Arena_Hackathon.pptx)
 
 ---
 
@@ -101,7 +101,7 @@ The only path to high reward is the intended one: engaged wins, paced spend, fat
 from meta_ad_optimizer.client import AdMarketArenaEnv
 from meta_ad_optimizer.models import AuctionAction
 
-async with AdMarketArenaEnv(base_url="https://ritz-gupta-meta-ad-optimizer.hf.space/arena") as env:
+async with AdMarketArenaEnv(base_url="https://ritz-gupta-admarket-arena.hf.space/arena") as env:
     obs = (await env.reset(task="arena_easy")).observation
     result = await env.step(AuctionAction(skip=False, bid_amount=1.20, creative_id=0))
     print(result.observation.last_auction_result)
@@ -112,11 +112,11 @@ async with AdMarketArenaEnv(base_url="https://ritz-gupta-meta-ad-optimizer.hf.sp
 ## Dive deeper
 
 - **Execution details, setup, full env spec, baselines, oversight agent →** [`README.md`](./README.md)
-- **Pitch deck (slides) →** [`AdMarket_Arena_Hackathon.pptx`](https://github.com/ritz-gupta/meta-ad-optimizer/raw/main/AdMarket_Arena_Hackathon.pptx)
-- **HuggingFace Space →** [ritz-gupta/meta-ad-optimizer](https://huggingface.co/spaces/ritz-gupta/meta-ad-optimizer)
+- **Pitch deck (slides) →** [`AdMarket_Arena_Hackathon.pptx`](https://github.com/ritz-gupta/AdMarket-Arena/raw/main/AdMarket_Arena_Hackathon.pptx)
+- **HuggingFace Space →** [ritz-gupta/AdMarket-Arena](https://huggingface.co/spaces/ritz-gupta/AdMarket-Arena)
 - **Trained model →** [MuskanBidani/admarket-advertiser-qwen2.5-3b-grpo](https://huggingface.co/MuskanBidani/admarket-advertiser-qwen2.5-3b-grpo)
 - **Training notebook →** [`train_grpo.ipynb`](./train_grpo.ipynb)
-- **Source →** [github.com/ritz-gupta/meta-ad-optimizer](https://github.com/ritz-gupta/meta-ad-optimizer)
+- **Source →** [github.com/ritz-gupta/AdMarket-Arena](https://github.com/ritz-gupta/AdMarket-Arena)
 
 ---
 

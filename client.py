@@ -98,7 +98,7 @@ class AdMarketArenaEnv(EnvClient[AuctionAction, AuctionObservation, ArenaState])
 
     Example (async, deployed HF Space):
         >>> async with AdMarketArenaEnv(
-        ...     base_url="https://ritz-gupta-meta-ad-optimizer.hf.space/arena"
+        ...     base_url="https://ritz-gupta-admarket-arena.hf.space/arena"
         ... ) as env:
         ...     result = await env.reset(task="arena_easy")
         ...     obs = result.observation

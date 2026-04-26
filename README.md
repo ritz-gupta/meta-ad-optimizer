@@ -31,7 +31,7 @@ from meta_ad_optimizer.client import AdMarketArenaEnv
 from meta_ad_optimizer.models import AuctionAction
 
 # Deployed Space
-async with AdMarketArenaEnv(base_url="https://ritz-gupta-meta-ad-optimizer.hf.space/arena") as env:
+async with AdMarketArenaEnv(base_url="https://ritz-gupta-admarket-arena.hf.space/arena") as env:
     result = await env.reset(task="arena_easy")
     obs = result.observation
     result = await env.step(AuctionAction(skip=False, bid_amount=1.20, creative_id=0))
@@ -45,7 +45,7 @@ async with AdMarketArenaEnv(base_url="http://localhost:8000/arena") as env:
 The deployed app's root endpoint advertises both routes for discovery:
 
 ```bash
-curl https://ritz-gupta-meta-ad-optimizer.hf.space/
+curl https://ritz-gupta-admarket-arena.hf.space/
 # → {"arena_endpoints": ["/arena/reset", ...], "arena_tasks": ["arena_easy", ...]}
 ```
 
@@ -244,13 +244,13 @@ python -m meta_ad_optimizer.baseline --arena --task arena_easy --episodes 5 --se
 
 ## Links
 
-- **HuggingFace Space**: [ritz-gupta/meta-ad-optimizer](https://huggingface.co/spaces/ritz-gupta/meta-ad-optimizer)
+- **HuggingFace Space**: [ritz-gupta/AdMarket-Arena](https://huggingface.co/spaces/ritz-gupta/AdMarket-Arena)
 - **Trained advertiser (HF Hub)**: [MuskanBidani/admarket-advertiser-qwen2.5-3b-grpo](https://huggingface.co/MuskanBidani/admarket-advertiser-qwen2.5-3b-grpo)
-- **Blog post**: [`blog_post.md`](./blog_post.md) — also published on the [HF Space](https://huggingface.co/spaces/ritz-gupta/meta-ad-optimizer/blob/main/blog_post.md)
-- **Pitch deck (slides)**: [`AdMarket_Arena_Hackathon.pptx`](https://github.com/ritz-gupta/meta-ad-optimizer/raw/main/AdMarket_Arena_Hackathon.pptx)
+- **Blog post**: [`blog_post.md`](./blog_post.md) — also published on the [HF Space](https://huggingface.co/spaces/ritz-gupta/AdMarket-Arena/blob/main/blog_post.md)
+- **Pitch deck (slides)**: [`AdMarket_Arena_Hackathon.pptx`](https://github.com/ritz-gupta/AdMarket-Arena/raw/main/AdMarket_Arena_Hackathon.pptx)
 - **Training notebook**: [`train_grpo.ipynb`](./train_grpo.ipynb)
 - **Oversight notebook**: [`train_oversight.ipynb`](./train_oversight.ipynb)
-- **Source code**: [github.com/ritz-gupta/meta-ad-optimizer](https://github.com/ritz-gupta/meta-ad-optimizer)
+- **Source code**: [github.com/ritz-gupta/AdMarket-Arena](https://github.com/ritz-gupta/AdMarket-Arena)
 
 ---
 
