@@ -131,6 +131,20 @@ env.reset(task="arena_hard", enabled_rubrics=["per_step_engagement", "weekly_roa
 
 ---
 
+## Why It's Hard to Game
+
+The hackathon brief explicitly flags reward-hacking — "an agent that exploits the reward without solving the task should not get high scores." Five concrete design choices close the obvious exploits:
+
+1. **Skip-spam can't farm reward.** The `+0.02` skip nudge is dwarfed by the click revenue an engaged win produces (~`+0.5` per won click). An always-skip policy ends with weekly ROAS = 0 and pays the `-2.0` underspend penalty — net reward strongly negative. Confirmed by the `ArenaRandom` baseline (20.7% skip rate → mean reward `-2.384`).
+2. **Greedy bidding can't farm reward.** The wasted-spend penalty (`-clearing_price × 0.10` per unclicked impression) plus the `-2.0` overspend penalty punishes the obvious "always max bid" exploit. The `ArenaGreedy` baseline depletes its budget by mid-week and lands at `0.264 ± 0.061` weekly ROAS — well below the `2.0×` target the WeeklyROASRubric measures against.
+3. **Single-day farming can't farm reward.** The weekly bonus is multiplicative on *weekly* ROAS, not sum-of-daily. An agent that posts a 5× Monday and zeros for the rest of the week still ends below the 1× threshold and receives near-zero terminal reward.
+4. **Bid-precision can't be gamed without engagement.** The auxiliary metric `Bid Precision = (bid − clearing_price) / clearing_price` looks artificially good for an agent that always bids exactly `clearing_price + ε`, but that agent loses ties and wins ≈0% of auctions, collapsing weekly ROAS. The metric is only meaningful **conditional on winning enough slots** — you can't optimise it in isolation.
+5. **Persona jitter prevents memorisation.** Each `PersonaBot` ships with per-episode trait jitter (`±20–30%` on budget, bid cap, fatigue threshold, segment weights — see the Opponents table above). The bid that wins against `WalletWatcher` this episode loses next, so the agent must learn *generalised* responses to opponent archetypes rather than fixed values.
+
+Together these mean the only path to high reward is the intended one: engaged wins, paced spend, fatigue-aware skipping, and cross-day planning via `yesterday_recap`.
+
+---
+
 ## Three Difficulty Tiers
 
 | Task | Days | Slots/day | Steps | Competitors | Budget |
@@ -231,7 +245,8 @@ python -m meta_ad_optimizer.baseline --arena --task arena_easy --episodes 5 --se
 ## Links
 
 - **HuggingFace Space**: [ritz-gupta/meta-ad-optimizer](https://huggingface.co/spaces/ritz-gupta/meta-ad-optimizer)
-- **Blog post**: [`blog_post.md`](./blog_post.md)
+- **Trained advertiser (HF Hub)**: [MuskanBidani/admarket-advertiser-qwen2.5-3b-grpo](https://huggingface.co/MuskanBidani/admarket-advertiser-qwen2.5-3b-grpo)
+- **Blog post**: [`blog_post.md`](./blog_post.md) — also published on the [HF Space](https://huggingface.co/spaces/ritz-gupta/meta-ad-optimizer/blob/main/blog_post.md)
 - **Pitch deck (slides)**: [`AdMarket_Arena_Hackathon.pptx`](https://github.com/ritz-gupta/meta-ad-optimizer/raw/main/AdMarket_Arena_Hackathon.pptx)
 - **Training notebook**: [`train_grpo.ipynb`](./train_grpo.ipynb)
 - **Oversight notebook**: [`train_oversight.ipynb`](./train_oversight.ipynb)
